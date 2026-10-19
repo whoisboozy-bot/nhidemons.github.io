@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Em... Khoảng Lặng & Lời Chân Thành</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FAF7F2',
+                        softRose: '#F4E3DD',
+                        accentRose: '#E0A99A',
+                        deepText: '#332C2B',
+                        mutedText: '#7A6E6B',
+                        glassBg: 'rgba(255, 255, 255, 0.65)'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        cursive: ['Alex Brush', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FAF7F2;
+            color: #332C2B;
+            scroll-behavior: smooth;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF7F2;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E0A99A;
+            border-radius: 4px;
+        }
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        /* 3D Flip Card Effect linh hoạt chiều cao theo ảnh nguyên bản */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .flip-card:hover .flip-card-inner, .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            width: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+        }
+        .flip-card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            transform: rotateY(180deg);
+        }
+        /* Fade in animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased relative selection:bg-accentRose selection:text-white">
+
+    <!-- Progress Bar Top -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-softRose z-50">
+        <div id="progressBar" class="h-full bg-accentRose w-0 transition-all duration-150"></div>
+    </div>
+
+    <!-- Music Control Float Button -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <button id="musicToggleBtn" onclick="toggleMusic()" class="w-12 h-12 rounded-full glass-card shadow-lg flex items-center justify-center text-accentRose hover:scale-110 transition-all border border-softRose">
+            <i id="musicIcon" class="fas fa-music text-lg"></i>
+        </button>
+        <!-- Thay link nhạc mp3 nền của bạn vào đây -->
+        <audio id="bgMusic" loop src="https://assets.mixkit.co/music/preview/mixkit-delicate-romantic-piano-122.mp3"></audio>
+    </div>
+
+    <!-- HEADER / HERO SECTION -->
+    <section class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-softRose/30 to-transparent pointer-events-none"></div>
+        
+        <div class="z-10 max-w-2xl mx-auto space-y-6 reveal active">
+            <span class="text-xs uppercase tracking-widest text-accentRose font-semibold px-3 py-1 rounded-full bg-softRose/50 border border-accentRose/20">
+                Góc Nhỏ Chân Thành
+            </span>
+            <h1 class="text-4xl md:text-6xl font-light text-deepText leading-tight">
+                Gửi <span class="font-cursive text-5xl md:text-7xl text-accentRose font-bold">NHI của anh</span>
+            </h1>
+            <p class="text-mutedText text-sm md:text-base leading-relaxed max-w-lg mx-auto">
+                Anh biết mọi lời giải thích lúc này đều không thể xóa đi những tổn thương. 
+                Trang web nhỏ này được làm riêng cho em, để lưu giữ những điều chân thành nhất mà anh chưa kịp bày tỏ.
+            </p>
+            
+            <div class="pt-8">
+                <a href="#section-memories" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-accentRose text-white hover:bg-opacity-90 shadow-md transition-all text-sm font-medium hover:gap-3">
+                    <span>Mở ra từng trang</span>
+                    <i class="fas fa-chevron-down text-xs"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- PHẦN 1: KỶ NIỆM ĐẸP (OUR CHERISHED MEMORIES) -->
+    <section id="section-memories" class="py-20 px-4 max-w-5xl mx-auto">
+        <div class="text-center mb-16 reveal">
+            <span class="text-xs font-semibold text-accentRose uppercase tracking-widest">Phần 1</span>
+            <h2 class="text-2xl md:text-3xl font-light text-deepText mt-1">Những Khoảnh Khắc Đã Cùng Nhau</h2>
+            <div class="w-12 h-0.5 bg-accentRose mx-auto mt-3"></div>
+        </div>
+
+        <div class="space-y-16">
+            <!-- Memory Item 1 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center reveal">
+                <div class="flip-card w-full cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://6ad6263f1149a77fa2f3fde6.imgix.net/sandbox/1.png?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 1" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU: Tự động phủ vừa khít chiều cao ảnh ở mặt trước -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+                                "Ngày hôm ấy thật tuyệt. Sau bao ngày nói chuyện, cuối cùng anh đã được gặp em. Anh vẫn còn nhớ lúc ấy anh vẫn còn ngủ ở quán nét, chỉ sống với 50.000đ mỗi ngày.
+								Lúc anh hẹn em, em vừa đi với bạn ở quán nướng, ta cùng ngồi đến tận 2h mà. Tối hôm ấy, anh về mà lòng lâng lâng. Lâu lắm anh mới có thể nói chuyện cùng ai đó.
+								Và cũng lần đầu, trái tim xao động ngay từ lần đầu gặp mặt."
+                            </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-3 md:pl-6">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 01</span>
+                    <h3 class="text-xl font-medium text-deepText">Buổi Hẹn Đầu Tiên & Nụ Cười Ấy</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+						"Anh vẫn giữ nguyên cảm xúc trong trẻo của buổi tối hôm ấy trong tim. Mọi thứ bắt đầu thật bình dị, nhưng lại thay đổi cả thế giới của anh từ khoảnh khắc đó."
+                    </p>
+                </div>
+            </div>
+
+            <!-- Memory Item 2 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center md:flex-row-reverse reveal">
+                <div class="space-y-3 md:pr-6 md:order-1">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 02</span>
+                    <h3 class="text-xl font-medium text-deepText">LẦN ĐẦU BIẾT HỌC CÁCH QUAN TÂM</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+"Đó là lần đầu tiên anh hiểu rằng tình yêu không nằm ở những dòng tin nhắn xã giao, mà nằm ở sự hiện diện. Khoảnh khắc nhìn thấy em và Đô, anh mới thực sự biết cảm giác muốn che chở cho một ai đó là như thế nào."                    </p>
+                </div>
+                <div class="flip-card w-full cursor-pointer md:order-2" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://i.postimg.cc/26gwMHY1/2.jpg?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 2" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+								Anh còn nhớ lần ấy Đô đi viện. Lần đầu tiên anh hiểu cảm giác cùa việc quan tâm người khác là gì. Thay vì chỉ hỏi thăm qua tin nhắn, anh mua 1 giỏ quà lên thăm em và Đô.
+								Cái giá của sự quan tâm nhẹ nhàng này là 1 story của e. Đặc biệt là nụ cười của em ngày hôm ấy.
+                            </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+	 <!-- Memory Item 3 -->
+	 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center reveal">
+                <div class="flip-card w-full cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://i.postimg.cc/1zfDSpJT/488906037-2294397510956578-1570718483922906979-n.jpg?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 1" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU: Tự động phủ vừa khít chiều cao ảnh ở mặt trước -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+                                "Lần đầu mà anh thấy sợ. Nhìn nỗi đau trên khuôn mặt em, anh sợ mình lại phải thấy em như vậy lần nữa. Lúc ấy, anh chỉ ước những cơn đau ấy sẽ chuyển sang cho anh. Bối rối, bất lực. Anh hiểu rằng đây là cô gái mà anh muốn chăm sóc cả đời. Anh không muốn em nằm đó một mình, anh sẵn sàng đánh dổi để dành thời gian cho em.
+                            </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-3 md:pl-6">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 03</span>
+                    <h3 class="text-xl font-medium text-deepText">KHOẢNG LẶNG VÀ SỰ THẤU HIỂU</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+"Có những khoảnh khắc trong đời khiến người ta chợt nhận ra ai là người quan trọng nhất. Nhìn em vượt qua cơn đau, anh không chỉ thấy xót xa mà còn nhận ra tình cảm trong mình lớn đến nhường nào."                    </p>
+                </div>
+            </div>
+			
+			<!-- Memory Item 4 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center md:flex-row-reverse reveal">
+                <div class="space-y-3 md:pr-6 md:order-1">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 04</span>
+                    <h3 class="text-xl font-medium text-deepText">KHOẢNH KHẮC GẬT ĐẦU</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+"Anh vẫn nhớ nguyên cảm giác vỡ òa hạnh phúc như một đứa trẻ trong khoảnh khắc ấy. Dù sau đó anh đã vụng về làm thương tổn cơ hội quý giá em trao, nhưng tình yêu và niềm rạo rực ngày hôm ấy hoàn toàn là thật."                </div>
+                <div class="flip-card w-full cursor-pointer md:order-2" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://i.postimg.cc/s2rRdcVN/IMG-2826.jpg?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 2" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+								Lời tỏ tình của anh được em đồng ý. Lúc ấy anh vui như trẻ con được cho kẹo. Anh hiểu rằng mình còn 1 cơ hội để được ở bên em, chăm sóc em, đồng hành cùng em. Tất nhiên là những điều đó sau này anh đều không làm được, nhưng trong khoảnh khắc ấy, trái tim anh vẫn rộn ràng. Lúc ấy, anh đã yêu em bằng tất cả mọi thứ.
+                            </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+			
+			
+			<!-- Memory Item 5 -->
+	 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center reveal">
+                <div class="flip-card w-full cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://i.postimg.cc/85dRXTyS/490354098-2297699217293074-4668292297668263589-n.jpg?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 1" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU: Tự động phủ vừa khít chiều cao ảnh ở mặt trước -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+								Buổi tối sinh nhật Đô. Cảm giác lúc ấy của anh là gì nhỉ? Là cảm giác của sự ngu ngơ. Em lo lắng tổ chức sinh nhật cho Đô, anh một bên bảo giúp, nhưng chỉ toàn làm theo những gì em nói, còn chả suy nghĩ sẽ làm gì để giúp em. Nực cười thay, anh luôn cho rằng mình là một người chu đáo nữa chứ. Lúc ấy mới nhận ra,
+								tình cảm cần nhiều sự quan tâm, chứ không phải một con robot nói gì làm nấy.
+                            </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-3 md:pl-6">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 05</span>
+                    <h3 class="text-xl font-medium text-deepText">BÀI HỌC VỀ SỰ THẤU HỂU</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+"Anh từng nghĩ mình đã đủ chu đáo, cho đến khi đứng nhìn em tất bật một mình. Đêm hôm ấy cho anh một bài học lớn: tình cảm không phải là sự có mặt thụ động, mà cần sự chủ động đặt trái tim mình vào nỗi lo của người mình yêu."                </div>
+            </div>
+	
+	<!-- Memory Item 6 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center md:flex-row-reverse reveal">
+                <div class="space-y-3 md:pr-6 md:order-1">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 06</span>
+                    <h3 class="text-xl font-medium text-deepText">GIA ĐÌNH BÌNH YÊN</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+					Lời tỏ tình của anh được em đồng ý. Lúc ấy anh vui như trẻ con được cho kẹo. Anh hiểu rằng mình còn 1 cơ hội để được ở bên em, chăm sóc em, đồng hành cùng em. Tất nhiên là những điều đó sau này anh đều không làm được, nhưng trong khoảnh khắc ấy, trái tim anh vẫn rộn ràng. Lúc ấy, anh đã yêu em bằng tất cả mọi thứ.
+
+</div>
+                <div class="flip-card w-full cursor-pointer md:order-2" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://i.postimg.cc/Bv7bqkXL/IMG-6690.jpg?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 2" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+								"Không cần những chuyến đi quá xa xôi, cảm giác ba người mình cùng đồng hành, nắm tay nhau bước đi mới là điều anh trân trọng nhất. Chuyến đi ấy cho anh hiểu rằng: chỉ cần có em và người anh thương bên cạnh, bất cứ nơi đâu cũng trở thành mái ấm."                <div class="flip-card w-full cursor-pointer md:order-2" onclick="this.classList.toggle('flipped')">
+
+                            </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		
+		
+		
+			
+			
+			<!-- Memory Item 7 -->
+	 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center reveal">
+                <div class="flip-card w-full cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://i.postimg.cc/8C695rCb/489958504-2300800616982934-7932125471069624082-n.jpg?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 1" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU: Tự động phủ vừa khít chiều cao ảnh ở mặt trước -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+															Một cơn ghen tuông ngu ngơ đã khiến anh đánh mất 1 kỉ niệm đẹp. Đúng ra ngày hôm ấy, 2 ta có thể cùng nhau đón 1 sinh nhật thật tuyệt vời. Anh đã chuẩn bị hết rồi, nhưng chỉ vì 1 tấm hình vu vơ, anh lao vào vào cơn ghen tuông mù quáng. Lúc ấy, anh sợ, sợ mất em lắm. Anh đã tự hứa mình sẽ luôn bên nhau, đặc biệt là trong những ngày đặc biệt như thế này.
+
+                            </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-3 md:pl-6">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 07</span>
+                    <h3 class="text-xl font-medium text-deepText">BÀI HỌC VỀ SỰ THẤU HỂU</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+"Anh từng chuẩn bị tất cả để mang lại cho em một ngày trọn vẹn nhất, nhưng rồi chính nỗi sợ mất em cùng sự nông nổi mù quáng đã phá hỏng khoảnh khắc ấy. Đêm hôm đó để lại trong anh một vết gợn tiếc nuối sâu sắc và bài học đắt giá về sự tin tưởng."            
+</div>
+</div>
+
+			
+			
+			<!-- Memory Item 8 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center md:flex-row-reverse reveal">
+                <div class="space-y-3 md:pr-6 md:order-1">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 08</span>
+                    <h3 class="text-xl font-medium text-deepText">CHUYẾN ĐI XA ĐẦU TIÊN</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+Một kỷ niệm đẹp vô cùng! Từng chi tiết nhỏ như bước ngoặt công việc nhận lương tháng, sự háo hức cho chuyến đi xa đầu tiên, cho đến hình ảnh cả gia đình cùng thức dậy nhìn qua lớp cửa kính ngắm biển sáng sớm... tất cả đều vẽ nên một bức tranh vô cùng yên bình, đầm ấm và đầy ắp tình yêu thương.
+</div>
+                <div class="flip-card w-full cursor-pointer md:order-2" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://i.postimg.cc/CKMpxsty/IMG-7801.jpg?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 2" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+"Dù chuyến đi xa đầu tiên ấy còn nhiều đơn sơ, nhưng cảm giác gia đình mình cùng thức dậy ở một nơi xa, ôm nhau ngắm biển qua lớp cửa kính sương mờ sáng sớm là khoảnh khắc bình yên nhất mà anh luôn giữ trọn trong tim."
+                            </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		
+		<!-- Memory Item 9 -->
+	 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center reveal">
+                <div class="flip-card w-full cursor-pointer" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://i.postimg.cc/tRnJb9W6/1792425002306-469957046872845089-5721066653063250625-f03fbe9e8880c0b05091327c97b3f68e.jpg?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 1" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU: Tự động phủ vừa khít chiều cao ảnh ở mặt trước -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+ Một chuyến đi không xa, nhưng ta lại có những cảm giác mới mẻ cùng nhau. Tìm về nhưng nơi vắng vẻ, không mạng, không sóng điện thoại. Chỉ có 2 chúng ta, 1 con gà, một tảng đã và nhưng phút giây thăng hoa cùng nhau. Anh những tưởng những điều này sẽ mãi mãi diên ra, cùng nhau tìm ra những điều mới, những nơi mới và tận hưởng những cảm giác mới mẻ.
+                            </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-3 md:pl-6">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 09</span>
+                    <h3 class="text-xl font-medium text-deepText">KHOẢNG TRỜI CHỈ CÓ HAI TA</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+"Không mạng xã hội, không sóng điện thoại hay những ồn ào ngoài kia. Chuyến đi ngắn ấy cho anh cảm nhận trọn vẹn sự kết nối nguyên bản nhất giữa hai tâm hồn—nơi từng khoảnh khắc bình dị và mộc mạc nhất đều trở thành vô giá."</div>
+</div>
+		
+		<!-- Memory Item 10 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center md:flex-row-reverse reveal">
+                <div class="space-y-3 md:pr-6 md:order-1">
+                    <span class="text-xs text-accentRose font-semibold tracking-wider uppercase">Cột Mốc 10</span>
+                    <h3 class="text-xl font-medium text-deepText">ĐÀ LẠT VÀ BÀI HỌC TRƯỞNG THÀNH</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+"Đà Lạt năm ấy không chỉ có cái lạnh dịu dàng hay những con đường tràn ngập kỷ niệm, mà còn là nơi giúp anh thức tỉnh. Giữa những trăn trở về tương lai, anh thực sự hiểu thế nào là tình yêu thương, là trách nhiệm và là lý do để anh nỗ lực phấn đấu mỗi ngày: vì mái ấm của ba chúng ta."</div>
+                <div class="flip-card w-full cursor-pointer md:order-2" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <!-- MẶT TRƯỚC: Hiển thị nguyên bản tỷ lệ & kích thước ảnh gốc -->
+                        <div class="flip-card-front glass-card overflow-hidden rounded-2xl shadow-sm">
+                            <img src="https://i.postimg.cc/gjjvzQyR/1792425448769-469957046872845089-5721066653063250625-d6ea5ad286eafab4c3fcf3884dafc6cf.jpg?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Memory 2" 
+                                 class="w-full h-auto object-contain block rounded-2xl">
+                        </div>
+                        <!-- MẶT SAU -->
+                        <div class="flip-card-back glass-card p-6 flex flex-col justify-center text-left bg-softRose/90 border border-accentRose/30 rounded-2xl">
+                            <h4 class="font-semibold text-deepText mb-2"><i class="fas fa-heart text-accentRose mr-2"></i>Lời nhắn phía sau bức ảnh:</h4>
+                            <p class="text-sm text-mutedText leading-relaxed">
+Đà Lạt năm ấy. Mọi khoảnh khắc đều tuyệt vời, từ phút giây đầu tiền của chuyến đi, đến những giờ ta cùng nhau trở về. Vẫn có khoảng lặng khi nghĩ về kinh tế, nhưng những trải nghiệm năm ấy sẽ luôn tồn tại trong trái tim của anh. Một chuyến đi đã dạy cho anh rất nhiều, đặc biệt là về tình yêu thương và trách nhiệm. Lúc ấy anh còn chưa có việc, và anh đã hiểu sự quý giá của trách nhiệm người đàn ông. Và cũng hiểu mình sẽ phấn đầu vì điều gì. Vì gia đình của 3 đứa ta.                           
+ </p>
+                            <span class="text-xs text-accentRose mt-4 font-medium">Bấm để lật lại ảnh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		
+		
+		
+			
+			</section>
+
+    <!-- PHẦN 2: LỖI LẦM & BÀI HỌC (MY MISTAKES & LESSONS) -->
+    <section class="py-20 px-4 bg-softRose/30">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <span class="text-xs font-semibold text-accentRose uppercase tracking-widest">Phần 2</span>
+                <h2 class="text-2xl md:text-3xl font-light text-deepText mt-1">Sự Vô Tâm & Bài Học Đắt Giá</h2>
+                <div class="w-12 h-0.5 bg-accentRose mx-auto mt-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-2xl space-y-3 border-t-2 border-accentRose reveal">
+                    <div class="w-10 h-10 rounded-full bg-softRose flex items-center justify-center text-accentRose font-bold">01</div>
+                    <h3 class="text-lg font-medium text-deepText">Sự Vô Tâm Lặp Lại</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+                        Anh đã quá vô tư mà không nhận ra những nỗi buồn em giấu đằng sau lời "Em không sao đâu". Anh đã để em phải cô đơn trong chính mối quan hệ của chúng mình.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl space-y-3 border-t-2 border-accentRose reveal">
+                    <div class="w-10 h-10 rounded-full bg-softRose flex items-center justify-center text-accentRose font-bold">02</div>
+                    <h3 class="text-lg font-medium text-deepText">Thiếu Lắng Nghe</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+                        Nhiều lần anh đã vội vã đưa ra lý lẽ thay vì lắng nghe và thấu hiểu cảm xúc của em trước tiên. Đó là sai lầm lớn nhất của anh.
+                    </p>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl space-y-3 border-t-2 border-accentRose reveal">
+                    <div class="w-10 h-10 rounded-full bg-softRose flex items-center justify-center text-accentRose font-bold">03</div>
+                    <h3 class="text-lg font-medium text-deepText">Nhận Thức & Tiếc Nuối</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+                        Khoảng thời gian rời xa em giúp anh tỉnh ngộ và nhận ra mình đã nông nổi thế nào. Anh không bào chữa, anh nhận hoàn toàn trách nhiệm về mình.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PHẦN 3: LỜI HỨA & THAY ĐỔI (PROMISES & VOICE NOTE) -->
+    <section class="py-20 px-4 max-w-3xl mx-auto">
+        <div class="text-center mb-12 reveal">
+            <span class="text-xs font-semibold text-accentRose uppercase tracking-widest">Phần 3</span>
+            <h2 class="text-2xl md:text-3xl font-light text-deepText mt-1">Lời Hứa & Sự Thay Đổi Thực Sự</h2>
+            <div class="w-12 h-0.5 bg-accentRose mx-auto mt-3"></div>
+        </div>
+
+        <div class="glass-card p-8 md:p-12 rounded-3xl space-y-6 shadow-sm border border-softRose reveal">
+            <div class="flex items-center justify-between border-b border-softRose pb-4">
+                <span class="font-cursive text-3xl text-accentRose">Gửi cô gái đã từng của anh. Nhi à...</span>
+                <span class="text-xs text-mutedText">Tháng 10, 2026</span>
+            </div>
+
+            <p class="text-sm md:text-base text-deepText leading-relaxed font-light">
+                Anh biết một vài câu hứa suông sẽ không thể ngay lập tức lấy lại niềm tin nơi em. Nhưng anh muốn em biết rằng, anh đã thực sự bắt đầu thay đổi từ những chi tiết nhỏ nhất mỗi ngày.
+            </p>
+
+            <ul class="space-y-3 text-sm text-mutedText">
+                <li class="flex items-start gap-3">
+                    <i class="fas fa-check-circle text-accentRose mt-1"></i>
+                    <span>Học cách kiên nhẫn lắng nghe mà không ngắt lời hay tranh luận.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <i class="fas fa-check-circle text-accentRose mt-1"></i>
+                    <span>Sắp xếp công việc để dành sự ưu tiên thực sự cho em, không chỉ là những lúc rảnh rỗi.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <i class="fas fa-check-circle text-accentRose mt-1"></i>
+                    <span>Tôn trọng không gian riêng của em, đợi cho đến khi em sẵn sàng mở lòng.</span>
+                </li>
+            </ul>
+
+            <!-- Voice Note Player Feature -->
+            <div class="pt-6 border-t border-softRose">
+                <div class="bg-cream p-4 rounded-2xl flex items-center gap-4">
+                    <button onclick="toggleVoiceNote()" class="w-12 h-12 rounded-full bg-accentRose text-white flex items-center justify-center shadow-md hover:scale-105 transition-all">
+                        <i id="voicePlayIcon" class="fas fa-play"></i>
+                    </button>
+                    <div class="flex-1">
+                        <div class="flex justify-between text-xs text-mutedText mb-1">
+                            <span class="font-medium">Voice Note: Lời tâm sự từ anh</span>
+                            <span id="voiceTime">00:00 / 04:30</span>
+                        </div>
+                        <div class="w-full bg-softRose h-1.5 rounded-full overflow-hidden">
+                            <div id="voiceProgress" class="bg-accentRose h-full w-0 transition-all duration-200"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Thay link file thu âm bài hát / tâm sự (.mp3) của bạn vào đây -->
+                <audio id="voiceAudio" src="https://files.catbox.moe/ampwc0.mp3"></audio>
+            </div>
+
+            <div class="text-right pt-4">
+                <span class="font-cursive text-3xl text-accentRose font-bold">Thành Khải</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- PHẦN 4: MÓN QUÀ 20/10 (SPECIAL 20/10 GIFT SECTION) -->
+    <section class="py-20 px-4 bg-gradient-to-b from-transparent to-softRose/40">
+        <div class="max-w-2xl mx-auto text-center space-y-8 reveal">
+            <span class="text-xs font-semibold text-accentRose uppercase tracking-widest px-3 py-1 bg-softRose rounded-full">
+                Ngày Phụ Nữ Việt Nam 20/10
+            </span>
+            <h2 class="text-3xl md:text-4xl font-light text-deepText">Một Món Quà Nhỏ Cho Em</h2>
+            <p class="text-sm text-mutedText leading-relaxed">
+                Dù bất kể khoảng cách hay hoàn cảnh nào giữa hai đứa lúc này, anh vẫn luôn mong em có một ngày 20/10 thật bình yên, xinh đẹp và ngập tràn niềm vui.
+            </p>
+
+            <!-- PASSCODE UNLOCK FORM -->
+            <div id="passcodeBox" class="glass-card p-6 rounded-2xl max-w-md mx-auto space-y-4 shadow-sm">
+                <p class="text-xs font-medium text-deepText">Nhập mật mã bí mật để mở hộp quà</p>
+                <div class="flex gap-2 justify-center">
+                    <input type="password" id="passcodeInput" maxlength="4" placeholder="••••" class="px-4 py-2 rounded-xl bg-white/80 border border-softRose text-center tracking-widest text-lg font-bold text-deepText focus:outline-none focus:border-accentRose w-36">
+                    <button onclick="checkPasscode()" class="px-5 py-2 bg-accentRose text-white rounded-xl font-medium text-sm hover:bg-opacity-90 transition-all shadow-sm">
+                        Mở Khóa
+                    </button>
+                </div>
+                <p id="passcodeError" class="text-xs text-red-400 hidden">Mật mã chưa đúng rồi, em thử lại nhé!</p>
+            </div>
+
+            <!-- GIFT REVEAL AREA (HIDDEN UNTIL UNLOCKED) -->
+            <div id="giftArea" class="hidden space-y-6">
+                <div class="relative inline-block cursor-pointer group" onclick="openGift()">
+                    <div class="w-28 h-28 md:w-36 md:h-36 bg-accentRose text-white rounded-3xl flex items-center justify-center text-4xl md:text-5xl shadow-xl transition-all duration-300 group-hover:scale-105 animate-bounce">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                </div>
+                <p class="text-xs text-accentRose font-medium">Bấm vào hộp quà để nhận bất ngờ!</p>
+
+                <!-- GIFT DETAIL MODAL / DISPLAY -->
+                <div id="giftCard" class="hidden glass-card p-8 rounded-3xl space-y-4 max-w-lg mx-auto border-2 border-accentRose shadow-lg animate-fade-in">
+                    <i class="fas fa-sparkles text-3xl text-accentRose"></i>
+                    <h3 class="text-2xl font-light text-deepText">Chúc Em 20/10 Thật Rạng Rỡ!</h3>
+                    <p class="text-sm text-mutedText leading-relaxed">
+                        Món quà nhỏ này thay cho lời chúc chân thành nhất của anh dành tặng em.
+                    </p>
+                    <div class="p-4 bg-cream/80 rounded-xl border border-softRose text-left text-xs space-y-2 text-deepText">
+                        <p class="font-semibold text-accentRose"><i class="fas fa-ticket-alt mr-2"></i>Và điều đó chính là anh...</p>
+                        <p> <img src="https://i.postimg.cc/65wD6hF4/IMG-8570.jpg?auto=format&fit=crop&w=800&q=80" </p>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE DECISION BUTTONS -->
+            <div class="pt-12 border-t border-softRose space-y-4">
+                <p class="text-sm text-deepText font-medium">Em có cảm thấy bớt buồn anh chút nào chưa?</p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button onclick="sendFeedback('forgive')" class="w-full sm:w-auto px-8 py-3 rounded-full bg-accentRose text-white hover:bg-opacity-90 transition-all text-sm font-medium shadow-md">
+                        🌸 Em bớt giận chút rồi
+                    </button>
+                    <button onclick="window.location.href='https://www.youtube.com/watch?v=95d8tRD-LQ0'" 
+        class="px-6 py-3 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50 transition text-sm font-medium">
+    Em vẫn cần thời gian
+</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-8 text-center text-xs text-mutedText bg-cream border-t border-softRose">
+        <p>Làm riêng với tất cả sự chân thành • 20/10</p>
+    </footer>
+
+    <!-- JAVASCRIPT CODE -->
+    <script>
+        const CORRECT_PASSCODE = "2837";
+        const YOUR_ZALO_PHONE = "0365241124"; 
+
+        function checkPasscode() {
+            const input = document.getElementById('passcodeInput').value;
+            const errorMsg = document.getElementById('passcodeError');
+            
+            if (input === CORRECT_PASSCODE) {
+                document.getElementById('passcodeBox').classList.add('hidden');
+                document.getElementById('giftArea').classList.remove('hidden');
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function openGift() {
+            const giftCard = document.getElementById('giftCard');
+            giftCard.classList.remove('hidden');
+            confetti({
+                particleCount: 120,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+        }
+
+        function sendFeedback(choice) {
+            let message = "";
+            if (choice === 'forgive') {
+                message = encodeURIComponent("Em đọc web 20/10 của anh rồi... Em bớt giận chút rồi đó! 🌸");
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            } else {
+                message = encodeURIComponent("Em đọc web rồi, nhưng em vẫn cần thêm thời gian suy nghĩ nhé.");
+            }
+
+            setTimeout(() => {
+                const zaloUrl = `https://zalo.me/${YOUR_ZALO_PHONE}?text=${message}`;
+                window.open(zaloUrl, '_blank');
+            }, 1000);
+        }
+
+        const bgMusic = document.getElementById('bgMusic');
+        const musicIcon = document.getElementById('musicIcon');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicIcon.className = "fas fa-music text-lg";
+            } else {
+                bgMusic.play();
+                musicIcon.className = "fas fa-pause text-lg text-accentRose";
+            }
+            isPlaying = !isPlaying;
+        }
+
+        const voiceAudio = document.getElementById('voiceAudio');
+        const voicePlayIcon = document.getElementById('voicePlayIcon');
+        const voiceProgress = document.getElementById('voiceProgress');
+        const voiceTime = document.getElementById('voiceTime');
+
+        function toggleVoiceNote() {
+            if (voiceAudio.paused) {
+                voiceAudio.play();
+                voicePlayIcon.className = "fas fa-pause";
+            } else {
+                voiceAudio.pause();
+                voicePlayIcon.className = "fas fa-play";
+            }
+        }
+
+        voiceAudio.ontimeupdate = function() {
+            const pct = (voiceAudio.currentTime / voiceAudio.duration) * 100;
+            voiceProgress.style.width = pct + "%";
+            
+            let curMin = Math.floor(voiceAudio.currentTime / 60);
+            let curSec = Math.floor(voiceAudio.currentTime % 60);
+            if (curSec < 10) curSec = "0" + curSec;
+            
+            let durMin = Math.floor(voiceAudio.duration / 60) || 0;
+            let durSec = Math.floor(voiceAudio.duration % 60) || 0;
+            if (durSec < 10) durSec = "0" + durSec;
+
+            voiceTime.innerText = `${curMin}:${curSec} / ${durMin}:${durSec}`;
+        };
+
+        window.onscroll = function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("progressBar").style.width = scrolled + "%";
+
+            const reveals = document.querySelectorAll('.reveal');
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                }
+            }
+        };
+    </script>
+</body>
+</html>
